@@ -3,25 +3,50 @@ package main
 import (
 	"fmt"
 
+	"encoding/json"
 	"github.com/aleasoluciones/go-persistentmap"
 )
 
+type Dummy struct {
+	Id   string
+	Name string
+}
+
+func dummySerialize(obj interface{}) []byte {
+	serilized, _ := json.Marshal(obj)
+	return serilized
+}
+
+func dummyDeserialize(serialized []byte) interface{} {
+	obj := Dummy{}
+	if err := json.Unmarshal(serialized, &obj); err != nil {
+		fmt.Println("Deserialization error", err, serialized)
+	}
+	return obj
+}
+
 func main() {
 
-	persistentmap := persistentmap.NewPersistentMap("test.db")
-	fmt.Println(persistentmap)
+	m := persistentmap.NewPersistentMap("test.db")
+	fmt.Println(m)
 
-	persistentmap.Set("answer1", []byte("42"))
-	persistentmap.Set("answer2", []byte("43"))
-	persistentmap.Set("answer3", []byte("44"))
+	m.Set("answer1", []byte("42"))
+	m.Set("answer2", []byte("43"))
+	m.Set("answer3", []byte("44"))
 
-	for tuple := range persistentmap.IterationChannel() {
+	for tuple := range m.IterationChannel() {
 		fmt.Println("Tuple", tuple.Key, string(tuple.Value))
 	}
 
-	fmt.Println("E1", string(persistentmap.Get("answer1")))
-	persistentmap.Delete("answer1")
+	fmt.Println("E1", string(m.Get("answer1")))
+	m.Delete("answer1")
 
-	fmt.Println("E2", string(persistentmap.Get("answer1")))
+	fmt.Println("E2", string(m.Get("answer1")))
+
+	m2 := persistentmap.NewPersistentMapWithSerialization("test2.db", dummySerialize, dummyDeserialize)
+	m2.SerializeAndSet("id1", Dummy{"id1", "john"})
+
+	result := m2.GetAndDeserialize("id1")
+	fmt.Println("Deserialized %s", result, fmt.Sprintf("%T", result))
 
 }

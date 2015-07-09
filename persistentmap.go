@@ -11,9 +11,14 @@ const (
 	MapBucket = "map"
 )
 
+type SerializeFunc func(interface{}) []byte
+type DeserializeFunc func([]byte) interface{}
+
 type PersistentMap struct {
-	db   *bolt.DB
-	name string
+	db           *bolt.DB
+	name         string
+	serializer   SerializeFunc
+	deserializer DeserializeFunc
 }
 
 func NewPersistentMap(filename string) *PersistentMap {
@@ -29,8 +34,22 @@ func NewPersistentMap(filename string) *PersistentMap {
 		}
 		return nil
 	})
-
 	return &PersistentMap{db: db, name: MapBucket}
+}
+
+func NewPersistentMapWithSerialization(filename string, serializer SerializeFunc, deserializer DeserializeFunc) *PersistentMap {
+	m := NewPersistentMap(filename)
+	m.serializer = serializer
+	m.deserializer = deserializer
+	return m
+}
+
+func (m *PersistentMap) SerializeAndSet(key string, obj interface{}) {
+	m.Set(key, m.serializer(obj))
+}
+
+func (m *PersistentMap) GetAndDeserialize(key string) interface{} {
+	return m.deserializer(m.Get(key))
 }
 
 func (m *PersistentMap) Set(key string, data []byte) {
