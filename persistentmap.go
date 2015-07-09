@@ -7,26 +7,30 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+const (
+	MapBucket = "map"
+)
+
 type PersistentMap struct {
 	db   *bolt.DB
 	name string
 }
 
-func NewPersistentMap(name, basepath string) *PersistentMap {
-	db, err := bolt.Open(basepath+name+".db", 0600, nil)
+func NewPersistentMap(filename string) *PersistentMap {
+	db, err := bolt.Open(filename, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucket([]byte(name))
+		_, err := tx.CreateBucket([]byte(MapBucket))
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
 		return nil
 	})
 
-	return &PersistentMap{db: db, name: name}
+	return &PersistentMap{db: db, name: MapBucket}
 }
 
 func (m *PersistentMap) Set(key string, data []byte) {
@@ -85,7 +89,7 @@ func (m *PersistentMap) IterationChannel() chan Tuple {
 
 func main() {
 
-	persistentmap := NewPersistentMap("test", "./")
+	persistentmap := NewPersistentMap("test.db")
 	fmt.Println(persistentmap)
 
 	persistentmap.Set("answer1", []byte("42"))
