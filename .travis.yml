@@ -11,5 +11,6 @@ before_install:
 script:
   - go build
   - go vet
-  - go build sample/sample.go
+  - cd sample; go build
+
 
