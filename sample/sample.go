@@ -45,8 +45,11 @@ func main() {
 
 	m2 := persistentmap.NewPersistentMapWithSerialization("test2.db", dummySerialize, dummyDeserialize)
 	m2.SerializeAndSet("id1", Dummy{"id1", "john"})
+	m2.SerializeAndSet("id2", Dummy{"id2", "kent"})
 
 	result := m2.GetAndDeserialize("id1")
 	fmt.Println("Deserialized %s", result, fmt.Sprintf("%T", result))
-
+	for tuple := range m2.IterationDeserializedChannel() {
+		fmt.Println("Tuple", tuple.Key, tuple.Value, fmt.Sprintf("%T", tuple.Value))
+	}
 }

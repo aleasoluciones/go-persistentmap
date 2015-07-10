@@ -105,3 +105,19 @@ func (m *PersistentMap) IterationChannel() chan Tuple {
 
 	return returnChan
 }
+
+type DeserializedTuple struct {
+	Key   string
+	Value interface{}
+}
+
+func (m *PersistentMap) IterationDeserializedChannel() chan DeserializedTuple {
+	returnChan := make(chan DeserializedTuple)
+	go func() {
+		for tuple := range m.IterationChannel() {
+			returnChan <- DeserializedTuple{tuple.Key, m.deserializer(tuple.Value)}
+		}
+		close(returnChan)
+	}()
+	return returnChan
+}
