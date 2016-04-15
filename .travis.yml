@@ -1,8 +1,6 @@
 
 language: go
 go:
- - 1.3
- - 1.4
  - 1.5
  - 1.6
  - tip
@@ -10,11 +8,13 @@ go:
 before_install:
   - go get -v ./...
   - go get github.com/stretchr/testify/assert
+  - go get -u github.com/golang/lint/golint
 
 script:
+  - golint ./...
+  - go vet ./..
   - go build
   - go test -tags integration ./...
-  - go vet
   - cd sample; go build
 
 
