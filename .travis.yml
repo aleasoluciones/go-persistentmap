@@ -12,7 +12,7 @@ before_install:
 
 script:
   - golint ./...
-  - go vet ./..
+  - go vet
   - go build
   - go test -tags integration ./...
   - cd sample; go build
