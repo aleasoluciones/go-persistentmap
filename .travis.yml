@@ -5,16 +5,8 @@ go:
  - 1.6
  - tip
 
-before_install:
-  - go get -v ./...
-  - go get github.com/stretchr/testify/assert
-  - go get -u github.com/golang/lint/golint
+sudo: false
 
 script:
-  - golint ./...
-  - go vet
-  - go build
-  - go test -tags integration ./...
-  - cd sample; go build
-
+  - make all
 
