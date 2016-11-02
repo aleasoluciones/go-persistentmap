@@ -96,7 +96,9 @@ func (m *PersistentMap) IterationChannel() chan Tuple {
 			c := b.Cursor()
 
 			for k, v := c.First(); k != nil; k, v = c.Next() {
-				returnChan <- Tuple{string(k), v}
+				var aux  = make([]byte, len(v))
+				copy(aux, v)
+				returnChan <- Tuple{string(k), aux}
 			}
 			close(returnChan)
 			return nil
