@@ -7,6 +7,11 @@ go:
 
 sudo: false
 
+# safelist branch to build
+branches:
+  only:
+    - master
+
 script:
   - make jenkins
 
