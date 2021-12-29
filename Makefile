@@ -1,34 +1,15 @@
-all: test build
-
-jenkins: install_dep_tool install_go_linter production_restore_deps test build
-
-install_dep_tool:
-	go get github.com/tools/godep
-
-install_go_linter:
-	go get -u -v golang.org/x/lint/golint
-
-initialize_deps:
-	go get -d -v ./...
-	go get -d -v github.com/stretchr/testify/assert
-	go get -v golang.org/x/lint/golint
-	godep save
-
-update_deps:
-	godep go install -v ./...
-	godep go install -v github.com/stretchr/testify/assert
-	godep go install -v golang.org/x/lint/golint
-	godep update ./...
+all: clean test build
 
 test:
-	golint ./...
-	godep go vet ./...
-	godep go test -tags integration ./...
+	go vet ./...
+	go clean -testcache
+	go test -v -tags integration ./...
 
 build:
-	cd sample; rm -f sample; godep go build
+	go build -o go-persistentmap sample/sample.go
 
-production_restore_deps:
-	godep restore
+clean:
+	rm -f go-persistentmap
 
-.PHONY: all jenkins install_dep_tool install_go_linter initialize_deps update_deps test build production_restore_deps
+
+.PHONY: all test build clean

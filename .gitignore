@@ -29,3 +29,8 @@ _testmain.go
 
 # Exclude vendor directory (godep dependency manager tool)
 vendor
+
+# binaries
+go-persistentmap
+rawmap1.db
+rawmap2.db
