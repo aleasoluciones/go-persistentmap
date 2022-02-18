@@ -30,6 +30,9 @@ _testmain.go
 # Exclude vendor directory (godep dependency manager tool)
 vendor
 
+# vim tags
+tags
+
 # binaries
 go-persistentmap
 rawmap1.db

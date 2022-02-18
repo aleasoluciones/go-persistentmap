@@ -1,5 +1,13 @@
 all: clean test build
 
+update_dep:
+	go get $(DEP)
+	go mod tidy
+
+update_all_deps:
+	go get -u all
+	go mod tidy
+
 test:
 	go vet ./...
 	go clean -testcache
@@ -12,4 +20,4 @@ clean:
 	rm -f go-persistentmap
 
 
-.PHONY: all test build clean
+.PHONY: all update_dep update_all_deps test build clean
